@@ -3,6 +3,16 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import type { Category, Media, Product, Stock } from '@/payload-types'
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
+export async function OPTIONS() {
+  return NextResponse.json(null, { headers: corsHeaders })
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
   const page = Math.max(1, Number(searchParams.get('page')) || 1)
@@ -47,15 +57,18 @@ export async function GET(req: NextRequest) {
     stock: stockByProduct.get(p.id) ?? { quantity: 0, status: 'out_of_stock' as const },
   }))
 
-  return NextResponse.json({
-    products,
-    metadata: {
-      page: productsResult.page,
-      limit: productsResult.limit,
-      totalDocs: productsResult.totalDocs,
-      totalPages: productsResult.totalPages,
-      hasNextPage: productsResult.hasNextPage,
-      hasPrevPage: productsResult.hasPrevPage,
+  return NextResponse.json(
+    {
+      products,
+      metadata: {
+        page: productsResult.page,
+        limit: productsResult.limit,
+        totalDocs: productsResult.totalDocs,
+        totalPages: productsResult.totalPages,
+        hasNextPage: productsResult.hasNextPage,
+        hasPrevPage: productsResult.hasPrevPage,
+      },
     },
-  })
+    { headers: corsHeaders },
+  )
 }
