@@ -10,13 +10,23 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
 
-const emptyPage = (page: number, limit: number) => ({
-  products: [],
-  metadata: { page, limit, totalDocs: 0, totalPages: 0, hasNextPage: false, hasPrevPage: false },
-})
-
 export async function OPTIONS() {
   return NextResponse.json(null, { headers: corsHeaders })
+}
+
+async function fetchCategoryMeta(payload: Awaited<ReturnType<typeof getPayload>>) {
+  const { docs } = await payload.find({ collection: 'categories', pagination: false, depth: 0 })
+  const counts = await Promise.all(
+    docs.map((cat) =>
+      payload
+        .count({
+          collection: 'products',
+          where: { and: [{ status: { equals: 'active' } }, { category: { equals: cat.id } }] },
+        })
+        .then(({ totalDocs }) => ({ name: cat.name, slug: cat.slug, count: totalDocs })),
+    ),
+  )
+  return counts
 }
 
 export async function GET(req: NextRequest) {
@@ -28,14 +38,13 @@ export async function GET(req: NextRequest) {
 
   const payload = await getPayload({ config })
 
+  const categoriesPromise = fetchCategoryMeta(payload)
+
   const conditions: Where[] = [{ status: { equals: 'active' } }]
 
   if (search) {
     conditions.push({
-      or: [
-        { name: { like: search } },
-        { description: { like: search } },
-      ],
+      or: [{ name: { like: search } }, { description: { like: search } }],
     })
   }
 
@@ -47,7 +56,17 @@ export async function GET(req: NextRequest) {
       depth: 0,
     })
     if (categoryResult.docs.length === 0) {
-      return NextResponse.json(emptyPage(page, limit), { headers: corsHeaders })
+      return NextResponse.json(
+        {
+          products: [],
+          metadata: {
+            page, limit, totalDocs: 0, totalPages: 0,
+            hasNextPage: false, hasPrevPage: false,
+            categories: await categoriesPromise,
+          },
+        },
+        { headers: corsHeaders },
+      )
     }
     conditions.push({ category: { equals: categoryResult.docs[0].id } })
   }
@@ -65,15 +84,17 @@ export async function GET(req: NextRequest) {
 
   const productIds = productsResult.docs.map((p) => p.id)
 
-  const stockResult =
+  const [stockResult, categories] = await Promise.all([
     productIds.length > 0
-      ? await payload.find({
+      ? payload.find({
           collection: 'stock',
           where: { product: { in: productIds } },
           limit: productIds.length,
           depth: 0,
         })
-      : { docs: [] as Stock[] }
+      : Promise.resolve({ docs: [] as Stock[] }),
+    categoriesPromise,
+  ])
 
   const stockByProduct = new Map<string, Pick<Stock, 'quantity' | 'status'>>()
   for (const s of stockResult.docs) {
@@ -101,6 +122,7 @@ export async function GET(req: NextRequest) {
         totalPages: productsResult.totalPages,
         hasNextPage: productsResult.hasNextPage,
         hasPrevPage: productsResult.hasPrevPage,
+        categories,
       },
     },
     { headers: corsHeaders },
