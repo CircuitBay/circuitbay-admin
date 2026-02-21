@@ -23,6 +23,7 @@ export default buildConfig({
       titleSuffix: ' | CircuitBay',
     },
   },
+  cors: '*',
   collections: [Users, Media, Categories, Products, Stock],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
