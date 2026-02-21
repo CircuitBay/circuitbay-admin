@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
           limit: productIds.length,
           depth: 0,
         })
-      : { docs: [] }
+      : { docs: [] as Stock[] }
 
   const stockByProduct = new Map<string, Pick<Stock, 'quantity' | 'status'>>()
   for (const s of stockResult.docs) {
