@@ -51,12 +51,11 @@ export const Products: CollectionConfig = {
       name: 'status',
       type: 'select',
       required: true,
-      defaultValue: 'draft',
+      defaultValue: 'active',
       admin: { position: 'sidebar' },
       options: [
-        { label: 'Draft', value: 'draft' },
         { label: 'Active', value: 'active' },
-        { label: 'Archived', value: 'archived' },
+        { label: 'Inactive', value: 'inactive' },
       ],
     },
     {

@@ -185,7 +185,7 @@ export interface Product {
   description?: string | null;
   price: number;
   category?: (string | null) | Category;
-  status: 'draft' | 'active' | 'archived';
+  status: 'active' | 'inactive';
   images?: (string | Media)[] | null;
   updatedAt: string;
   createdAt: string;

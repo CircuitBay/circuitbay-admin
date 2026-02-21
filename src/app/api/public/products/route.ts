@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import type { Where } from 'payload'
 import type { Category, Media, Product, Stock } from '@/payload-types'
 
 const corsHeaders = {
@@ -8,6 +9,11 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
+
+const emptyPage = (page: number, limit: number) => ({
+  products: [],
+  metadata: { page, limit, totalDocs: 0, totalPages: 0, hasNextPage: false, hasPrevPage: false },
+})
 
 export async function OPTIONS() {
   return NextResponse.json(null, { headers: corsHeaders })
@@ -17,12 +23,40 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
   const page = Math.max(1, Number(searchParams.get('page')) || 1)
   const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit')) || 10))
+  const search = searchParams.get('search')?.trim() || ''
+  const categorySlug = searchParams.get('category')?.trim() || ''
 
   const payload = await getPayload({ config })
 
+  const conditions: Where[] = [{ status: { equals: 'active' } }]
+
+  if (search) {
+    conditions.push({
+      or: [
+        { name: { like: search } },
+        { description: { like: search } },
+      ],
+    })
+  }
+
+  if (categorySlug) {
+    const categoryResult = await payload.find({
+      collection: 'categories',
+      where: { slug: { equals: categorySlug } },
+      limit: 1,
+      depth: 0,
+    })
+    if (categoryResult.docs.length === 0) {
+      return NextResponse.json(emptyPage(page, limit), { headers: corsHeaders })
+    }
+    conditions.push({ category: { equals: categoryResult.docs[0].id } })
+  }
+
+  const where: Where = conditions.length > 1 ? { and: conditions } : conditions[0]
+
   const productsResult = await payload.find({
     collection: 'products',
-    where: { status: { equals: 'active' } },
+    where,
     page,
     limit,
     depth: 1,
