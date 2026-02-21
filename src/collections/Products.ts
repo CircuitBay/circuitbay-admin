@@ -4,7 +4,7 @@ export const Products: CollectionConfig = {
   slug: 'products',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'price', 'category', 'status'],
+    defaultColumns: ['name', 'price', 'category', 'featured', 'status'],
   },
   fields: [
     {
@@ -45,6 +45,12 @@ export const Products: CollectionConfig = {
       name: 'category',
       type: 'relationship',
       relationTo: 'categories',
+      admin: { position: 'sidebar' },
+    },
+    {
+      name: 'featured',
+      type: 'checkbox',
+      defaultValue: false,
       admin: { position: 'sidebar' },
     },
     {

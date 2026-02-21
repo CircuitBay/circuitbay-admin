@@ -152,7 +152,7 @@ export interface User {
  */
 export interface Media {
   id: string;
-  alt: string;
+  alt?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -185,6 +185,7 @@ export interface Product {
   description?: string | null;
   price: number;
   category?: (string | null) | Category;
+  featured?: boolean | null;
   status: 'active' | 'inactive';
   images?: (string | Media)[] | null;
   updatedAt: string;
@@ -347,6 +348,7 @@ export interface ProductsSelect<T extends boolean = true> {
   description?: T;
   price?: T;
   category?: T;
+  featured?: T;
   status?: T;
   images?: T;
   updatedAt?: T;

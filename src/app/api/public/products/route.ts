@@ -35,6 +35,7 @@ export async function GET(req: NextRequest) {
   const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit')) || 10))
   const search = searchParams.get('search')?.trim() || ''
   const categorySlug = searchParams.get('category')?.trim() || ''
+  const featuredParam = searchParams.get('featured')?.trim().toLowerCase()
 
   const payload = await getPayload({ config })
 
@@ -46,6 +47,10 @@ export async function GET(req: NextRequest) {
     conditions.push({
       or: [{ name: { like: search } }, { description: { like: search } }],
     })
+  }
+
+  if (featuredParam === 'true' || featuredParam === 'false') {
+    conditions.push({ featured: { equals: featuredParam === 'true' } })
   }
 
   if (categorySlug) {
@@ -107,6 +112,7 @@ export async function GET(req: NextRequest) {
     slug: p.slug,
     description: p.description ?? null,
     price: p.price,
+    featured: p.featured ?? false,
     category: p.category ? (p.category as Category).name : null,
     images: (p.images as Media[] | undefined)?.map((img) => img.url).filter(Boolean) ?? [],
     stock: stockByProduct.get(p.id) ?? { quantity: 0, status: 'out_of_stock' as const },
