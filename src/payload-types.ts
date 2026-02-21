@@ -90,7 +90,7 @@ export interface Config {
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: number;
+    defaultIDType: string;
   };
   fallbackLocale: null;
   globals: {};
@@ -207,7 +207,7 @@ export interface Stock {
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: number;
+  id: string;
   key: string;
   data:
     | {
@@ -224,7 +224,7 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: number;
+  id: string;
   document?:
     | ({
         relationTo: 'users';
@@ -259,7 +259,7 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: number;
+  id: string;
   user: {
     relationTo: 'users';
     value: string | User;
@@ -282,7 +282,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: number;
+  id: string;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -293,7 +293,6 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  id?: T;
   name?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -317,7 +316,6 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
-  id?: T;
   alt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -334,7 +332,6 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
-  id?: T;
   name?: T;
   slug?: T;
   updatedAt?: T;
@@ -345,7 +342,6 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "products_select".
  */
 export interface ProductsSelect<T extends boolean = true> {
-  id?: T;
   name?: T;
   slug?: T;
   description?: T;
@@ -361,7 +357,6 @@ export interface ProductsSelect<T extends boolean = true> {
  * via the `definition` "stock_select".
  */
 export interface StockSelect<T extends boolean = true> {
-  id?: T;
   product?: T;
   quantity?: T;
   status?: T;
