@@ -1,5 +1,4 @@
 import type { CollectionConfig } from 'payload'
-import { nanoid } from 'nanoid'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -12,12 +11,6 @@ export const Media: CollectionConfig = {
     mimeTypes: ['image/*'],
   },
   fields: [
-    {
-      name: 'id',
-      type: 'text',
-      defaultValue: () => nanoid(),
-      admin: { readOnly: true },
-    },
     {
       name: 'alt',
       type: 'text',

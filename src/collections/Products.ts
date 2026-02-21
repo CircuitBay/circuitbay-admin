@@ -1,5 +1,4 @@
 import type { CollectionConfig } from 'payload'
-import { nanoid } from 'nanoid'
 
 export const Products: CollectionConfig = {
   slug: 'products',
@@ -8,12 +7,6 @@ export const Products: CollectionConfig = {
     defaultColumns: ['name', 'price', 'category', 'status'],
   },
   fields: [
-    {
-      name: 'id',
-      type: 'text',
-      defaultValue: () => nanoid(),
-      admin: { readOnly: true },
-    },
     {
       name: 'name',
       type: 'text',

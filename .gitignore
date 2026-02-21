@@ -5,13 +5,12 @@ node_modules
 out/
 build/
 
+# vercel
+.vercel
+
 # env
 .env
 .env*.local
-
-# cloudflare
-.open-next
-.wrangler
 
 # generated
 *.tsbuildinfo

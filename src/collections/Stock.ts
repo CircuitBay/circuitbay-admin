@@ -1,5 +1,4 @@
 import type { CollectionConfig, CollectionBeforeChangeHook } from 'payload'
-import { nanoid } from 'nanoid'
 
 const updateStatus: CollectionBeforeChangeHook = ({ data }) => {
   if (data?.quantity !== undefined) {
@@ -17,12 +16,6 @@ export const Stock: CollectionConfig = {
     beforeChange: [updateStatus],
   },
   fields: [
-    {
-      name: 'id',
-      type: 'text',
-      defaultValue: () => nanoid(),
-      admin: { readOnly: true },
-    },
     {
       name: 'product',
       type: 'relationship',
