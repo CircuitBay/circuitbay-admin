@@ -43,6 +43,9 @@ export default buildConfig({
         },
         region: 'auto',
       },
+      generateFileURL: ({ filename }) => {
+        return `${process.env.R2_PUBLIC_URL}/${filename}`
+      },
     }),
   ],
 })
