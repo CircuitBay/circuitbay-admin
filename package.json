@@ -1,0 +1,37 @@
+{
+  "name": "circuitbay-admin",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
+    "deploy": "bun run deploy:db && bun run deploy:app",
+    "deploy:app": "opennextjs-cloudflare build --env=$CLOUDFLARE_ENV && opennextjs-cloudflare deploy --env=$CLOUDFLARE_ENV",
+    "deploy:db": "cross-env NODE_ENV=production PAYLOAD_SECRET=ignore payload migrate && wrangler d1 execute D1 --command 'PRAGMA optimize' --env=$CLOUDFLARE_ENV --remote",
+    "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
+    "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
+    "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
+    "migrate:create": "payload migrate:create",
+    "migrate": "payload migrate"
+  },
+  "dependencies": {
+    "@opennextjs/cloudflare": "^1.11.0",
+    "@payloadcms/db-d1-sqlite": "3.77.0",
+    "@payloadcms/next": "3.77.0",
+    "@payloadcms/storage-r2": "3.77.0",
+    "@payloadcms/ui": "3.77.0",
+    "cross-env": "^7.0.3",
+    "nanoid": "^5.1.5",
+    "next": "15.4.11",
+    "payload": "3.77.0",
+    "react": "19.2.1",
+    "react-dom": "19.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.9",
+    "@types/react": "19.2.9",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.7.3",
+    "wrangler": "~4.61.1"
+  }
+}
